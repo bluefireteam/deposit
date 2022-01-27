@@ -28,16 +28,20 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
   }
 
   @override
-  Future<bool> exists(String table, int id) async {
+  Future<bool> exists(String table, String primaryColumn, int id) async {
     final response =
-        await _from(table).select().eq('id', id).limit(1).execute();
+        await _from(table).select().eq(primaryColumn, id).limit(1).execute();
     return response.count == 1;
   }
 
   @override
-  Future<Map<String, dynamic>> getById(String table, int id) async {
+  Future<Map<String, dynamic>> getById(
+    String table,
+    String primaryColumn,
+    int id,
+  ) async {
     final response =
-        await _from(table).select().eq('id', id).single().execute();
+        await _from(table).select().eq(primaryColumn, id).single().execute();
     if (response.error != null) {
       throw response.error!;
     }
@@ -64,15 +68,25 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
   }
 
   @override
-  Future<void> remove(String table, Map<String, dynamic> data) async {
-    final response = await _from(table).delete().match(data).execute();
+  Future<void> remove(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _from(table).delete().match(<String, dynamic>{
+      primaryColumn: data[primaryColumn],
+    }).execute();
     if (response.error != null) {
       throw response.error!;
     }
   }
 
   @override
-  Future<Map<String, dynamic>> update(String table, Map<String, dynamic> data) {
+  Future<Map<String, dynamic>> update(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  ) {
     // TODO(wolfen): implement update
     throw UnimplementedError();
   }

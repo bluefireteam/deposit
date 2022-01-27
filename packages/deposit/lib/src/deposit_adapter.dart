@@ -9,7 +9,7 @@ abstract class DepositAdapter<Id> {
   const DepositAdapter();
 
   /// Check if given [id] exists in the [table].
-  Future<bool> exists(String table, Id id);
+  Future<bool> exists(String table, String primaryColumn, Id id);
 
   /// Return list of paginated data.
   Future<List<Map<String, dynamic>>> page(
@@ -20,7 +20,11 @@ abstract class DepositAdapter<Id> {
   });
 
   /// Return data that is referenced by the given [Id] in the [table].
-  Future<Map<String, dynamic>> getById(String table, Id id);
+  Future<Map<String, dynamic>> getById(
+    String table,
+    String primaryColumn,
+    Id id,
+  );
 
   /// Return data that is referenced by the given [key] and the [value].
   Future<List<Map<String, dynamic>>> by(
@@ -33,10 +37,18 @@ abstract class DepositAdapter<Id> {
   Future<Map<String, dynamic>> add(String table, Map<String, dynamic> data);
 
   /// Update data in the backend and return the newly updated data.
-  Future<Map<String, dynamic>> update(String table, Map<String, dynamic> data);
+  Future<Map<String, dynamic>> update(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  );
 
   /// Remove data in the backend.
-  Future<void> remove(String table, Map<String, dynamic> data);
+  Future<void> remove(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  );
 
   // TODO(wolfen): search?
 

@@ -31,23 +31,32 @@ class ExampleAdapter extends DepositAdapter<int> {
   }
 
   @override
-  Future<bool> exists(String table, int id) async {
+  Future<bool> exists(String table, String primaryColumn, int id) async {
     return id.isEven;
   }
 
   @override
-  Future<Map<String, dynamic>> getById(String table, int id) async {
+  Future<Map<String, dynamic>> getById(
+    String table,
+    String primaryColumn,
+    int id,
+  ) async {
     return <String, dynamic>{
       'id': id,
     };
   }
 
   @override
-  Future<void> remove(String table, Map<String, dynamic> data) async {}
+  Future<void> remove(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  ) async {}
 
   @override
   Future<Map<String, dynamic>> update(
     String table,
+    String primaryColumn,
     Map<String, dynamic> data,
   ) async {
     return data;
