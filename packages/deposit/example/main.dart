@@ -37,8 +37,8 @@ Future<void> main() async {
   Deposit.defaultAdapter = MemoryDepositAdapter();
 
   final movieDeposit = MovieDeposit();
-  await movieDeposit.add(MovieEntity(id: 1, title: 'The Godfather'));
-  await movieDeposit.add(MovieEntity(id: 2, title: 'Avatar'));
+  await movieDeposit.add(MovieEntity(title: 'The Godfather'));
+  await movieDeposit.add(MovieEntity(title: 'Avatar'));
 
   final movie = await movieDeposit.getById(1);
   print('Movie id: ${movie.id}');

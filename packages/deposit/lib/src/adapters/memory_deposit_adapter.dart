@@ -9,9 +9,11 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
   @override
   Future<Map<String, dynamic>> add(
     String table,
+    String primaryColumn,
     Map<String, dynamic> data,
   ) async {
     _ref(table).add(data);
+    data[primaryColumn] = _ref(table).length;
     return data;
   }
 

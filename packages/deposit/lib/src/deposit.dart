@@ -63,7 +63,7 @@ abstract class Deposit<E extends Entity, Id> {
 
   /// Add an [Entity] in the data backend and return the newly stored [Entity].
   Future<E> add(E entity) async {
-    return builder(await _adapter.add(table, entity.toJSON()));
+    return builder(await _adapter.add(table, primaryColumn, entity.toJSON()));
   }
 
   /// Update an [Entity] in the data backend and return the newly updated
