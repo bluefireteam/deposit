@@ -12,9 +12,10 @@ abstract class Deposit<E extends Entity, Id> {
   /// backend.
   Deposit(
     this.table,
-    this.builder, [
+    this.builder, {
     DepositAdapter<Id>? adapter,
-  ]) : _adapter = adapter ?? defaultAdapter as DepositAdapter<Id>;
+    this.primaryColumn = 'id',
+  }) : _adapter = adapter ?? defaultAdapter as DepositAdapter<Id>;
 
   /// The default adapter for any [Deposit] to use when no adapter is given in
   /// the constructor.
@@ -23,13 +24,16 @@ abstract class Deposit<E extends Entity, Id> {
   /// Reference to the internal data store for the [_adapter].
   final String table;
 
+  /// The primary column of the [Entity].
+  final String primaryColumn;
+
   /// Entity builder.
   final E Function(Map<String, dynamic>) builder;
 
   final DepositAdapter<Id> _adapter;
 
   /// Check if an [Entity] exists with the given [Id].
-  Future<bool> exists(Id id) => _adapter.exists(table, id);
+  Future<bool> exists(Id id) => _adapter.exists(table, primaryColumn, id);
 
   /// Return a list of paginated entities.
   Future<List<E>> page({
@@ -46,10 +50,10 @@ abstract class Deposit<E extends Entity, Id> {
         .map(builder)
         .toList();
   }
-  
+
   /// Retrieve an [Entity] by [Id].
   Future<E> getById(Id id) async {
-    return builder(await _adapter.getById(table, id));
+    return builder(await _adapter.getById(table, primaryColumn, id));
   }
 
   /// Retrieve an [Entity] by given [key] matching the [value].
@@ -65,11 +69,17 @@ abstract class Deposit<E extends Entity, Id> {
   /// Update an [Entity] in the data backend and return the newly updated
   /// [Entity].
   Future<E> update(E entity) async {
-    return builder(await _adapter.update(table, entity.toJSON()));
+    return builder(
+      await _adapter.update(table, primaryColumn, entity.toJSON()),
+    );
   }
 
   /// Remove an [Entity] in the data backend.
-  Future<void> remove(E entity) => _adapter.remove(table, entity.toJSON());
+  Future<void> remove(E entity) => _adapter.remove(
+        table,
+        primaryColumn,
+        entity.toJSON(),
+      );
 
   // TODO(wolfen): search?
 
