@@ -28,7 +28,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
 
   @override
   Future<bool> exists(String table, String primaryColumn, int id) async {
-    return _ref(table).where((item) => item['id'] == id).length == 1;
+    return _ref(table).where((item) => item[primaryColumn] == id).length == 1;
   }
 
   @override
@@ -37,7 +37,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     int id,
   ) async {
-    return _ref(table).firstWhere((item) => item['id'] == id);
+    return _ref(table).firstWhere((item) => item[primaryColumn] == id);
   }
 
   @override
@@ -73,9 +73,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    _ref(table).removeWhere((item) {
-      return item[primaryColumn] == data[primaryColumn];
-    });
+    _ref(table).removeAt(data[primaryColumn] as int);
   }
 
   @override
@@ -84,9 +82,6 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final index = _ref(table).indexWhere(
-      (item) => item[primaryColumn] == data[primaryColumn],
-    );
-    return _ref(table)[index] = data;
+    return _ref(table)[data[primaryColumn] as int] = data;
   }
 }
