@@ -9,7 +9,11 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
   SupabaseQueryBuilder _from(String table) => _client.from(table);
 
   @override
-  Future<Map<String, dynamic>> add(String table, Map<String, dynamic> data) {
+  Future<Map<String, dynamic>> add(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  ) {
     // TODO(wolfen): implement add
     throw UnimplementedError();
   }

@@ -34,7 +34,11 @@ abstract class DepositAdapter<Id> {
   );
 
   /// Store data in the backend and return the newly stored data.
-  Future<Map<String, dynamic>> add(String table, Map<String, dynamic> data);
+  Future<Map<String, dynamic>> add(
+    String table,
+    String primaryColumn,
+    Map<String, dynamic> data,
+  );
 
   /// Update data in the backend and return the newly updated data.
   Future<Map<String, dynamic>> update(

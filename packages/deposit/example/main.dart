@@ -1,67 +1,4 @@
-import 'dart:developer';
-
 import 'package:deposit/deposit.dart';
-
-class ExampleAdapter extends DepositAdapter<int> {
-  @override
-  Future<Map<String, dynamic>> add(
-    String table,
-    Map<String, dynamic> data,
-  ) async {
-    return data;
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> page(
-    String table, {
-    required int limit,
-    required int skip,
-    OrderBy? orderBy,
-  }) async {
-    return [];
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> by(
-    String table,
-    String key,
-    dynamic value,
-  ) async {
-    return [];
-  }
-
-  @override
-  Future<bool> exists(String table, String primaryColumn, int id) async {
-    return id.isEven;
-  }
-
-  @override
-  Future<Map<String, dynamic>> getById(
-    String table,
-    String primaryColumn,
-    int id,
-  ) async {
-    return <String, dynamic>{
-      'id': id,
-    };
-  }
-
-  @override
-  Future<void> remove(
-    String table,
-    String primaryColumn,
-    Map<String, dynamic> data,
-  ) async {}
-
-  @override
-  Future<Map<String, dynamic>> update(
-    String table,
-    String primaryColumn,
-    Map<String, dynamic> data,
-  ) async {
-    return data;
-  }
-}
 
 class MovieEntity extends Entity {
   MovieEntity({
@@ -87,6 +24,9 @@ class MovieEntity extends Entity {
       'title': title,
     };
   }
+
+  @override
+  String toString() => '$id: $title';
 }
 
 class MovieDeposit extends Deposit<MovieEntity, int> {
@@ -94,12 +34,14 @@ class MovieDeposit extends Deposit<MovieEntity, int> {
 }
 
 Future<void> main() async {
-  Deposit.defaultAdapter = ExampleAdapter();
+  Deposit.defaultAdapter = MemoryDepositAdapter();
 
   final movieDeposit = MovieDeposit();
+  await movieDeposit.add(MovieEntity(title: 'The Godfather'));
+  await movieDeposit.add(MovieEntity(title: 'Avatar'));
 
   final movie = await movieDeposit.getById(1);
-  log('Movie id: ${movie.id}');
+  print('Movie id: ${movie.id}');
 
-  await movieDeposit.page(orderBy: OrderBy('title'));
+  print(await movieDeposit.page(orderBy: OrderBy('title', ascending: true)));
 }
