@@ -1,6 +1,10 @@
 import 'package:deposit/deposit.dart';
 import 'package:supabase/supabase.dart';
 
+typedef _Single = PostgrestResponse<Map<String, dynamic>>;
+typedef _Multiple = PostgrestResponse<List<Map<String, dynamic>>>;
+
+/// A Supabase backed implementation of [DepositAdapter].
 class SupabaseDepositAdapter extends DepositAdapter<int> {
   const SupabaseDepositAdapter(this._client);
 
@@ -13,9 +17,12 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     Map<String, dynamic> data,
-  ) {
-    // TODO(wolfen): implement add
-    throw UnimplementedError();
+  ) async {
+    final response = await _from(table).insert([data]).execute() as _Multiple;
+    if (response.error != null) {
+      throw response.error!;
+    }
+    return response.data!.first;
   }
 
   @override
@@ -24,17 +31,21 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String key,
     dynamic value,
   ) async {
-    final response = await _from(table).select().eq(key, value).execute();
+    final response =
+        await _from(table).select().eq(key, value).execute() as _Multiple;
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data as List<Map<String, dynamic>>;
+    return response.data!;
   }
 
   @override
   Future<bool> exists(String table, String primaryColumn, int id) async {
-    final response =
-        await _from(table).select().eq(primaryColumn, id).limit(1).execute();
+    final response = await _from(table)
+        .select()
+        .eq(primaryColumn, id)
+        .limit(1)
+        .execute() as _Multiple;
     return response.count == 1;
   }
 
@@ -44,12 +55,15 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     int id,
   ) async {
-    final response =
-        await _from(table).select().eq(primaryColumn, id).single().execute();
+    final response = await _from(table)
+        .select()
+        .eq(primaryColumn, id)
+        .single()
+        .execute() as _Single;
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data as Map<String, dynamic>;
+    return response.data!;
   }
 
   @override
@@ -64,11 +78,11 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
       query.order(orderBy.key, ascending: orderBy.ascending);
     }
 
-    final response = await query.execute();
+    final response = await query.execute() as _Multiple;
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data as List<Map<String, dynamic>>;
+    return response.data!;
   }
 
   @override
@@ -90,8 +104,13 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     Map<String, dynamic> data,
-  ) {
-    // TODO(wolfen): implement update
-    throw UnimplementedError();
+  ) async {
+    final response = await _from(table).update(data).match(<String, dynamic>{
+      primaryColumn: data[primaryColumn],
+    }).execute() as _Single;
+    if (response.error != null) {
+      throw response.error!;
+    }
+    return response.data!;
   }
 }
