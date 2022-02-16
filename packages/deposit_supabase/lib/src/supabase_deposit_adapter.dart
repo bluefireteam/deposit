@@ -1,9 +1,6 @@
 import 'package:deposit/deposit.dart';
 import 'package:supabase/supabase.dart';
 
-typedef _Single = PostgrestResponse<Map<String, dynamic>>;
-typedef _Multiple = PostgrestResponse<List<Map<String, dynamic>>>;
-
 /// A Supabase backed implementation of [DepositAdapter].
 class SupabaseDepositAdapter extends DepositAdapter<int> {
   const SupabaseDepositAdapter(this._client);
@@ -18,11 +15,11 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final response = await _from(table).insert([data]).execute() as _Multiple;
+    final response = await _from(table).insert([data]).execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data!.first;
+    return (response.data as List<dynamic>).first as Map<String, dynamic>;
   }
 
   @override
@@ -31,21 +28,17 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String key,
     dynamic value,
   ) async {
-    final response =
-        await _from(table).select().eq(key, value).execute() as _Multiple;
+    final response = await _from(table).select().eq(key, value).execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data!;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   @override
   Future<bool> exists(String table, String primaryColumn, int id) async {
-    final response = await _from(table)
-        .select()
-        .eq(primaryColumn, id)
-        .limit(1)
-        .execute() as _Multiple;
+    final response =
+        await _from(table).select().eq(primaryColumn, id).limit(1).execute();
     return response.count == 1;
   }
 
@@ -55,15 +48,12 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     int id,
   ) async {
-    final response = await _from(table)
-        .select()
-        .eq(primaryColumn, id)
-        .single()
-        .execute() as _Single;
+    final response =
+        await _from(table).select().eq(primaryColumn, id).single().execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data!;
+    return response.data as Map<String, dynamic>;
   }
 
   @override
@@ -78,11 +68,11 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
       query.order(orderBy.key, ascending: orderBy.ascending);
     }
 
-    final response = await query.execute() as _Multiple;
+    final response = await query.execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data!;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   @override
@@ -107,10 +97,10 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
   ) async {
     final response = await _from(table).update(data).match(<String, dynamic>{
       primaryColumn: data[primaryColumn],
-    }).execute() as _Single;
+    }).execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data!;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>().first;
   }
 }
