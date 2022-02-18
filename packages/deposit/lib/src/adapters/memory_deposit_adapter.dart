@@ -12,9 +12,12 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    _ref(table).add(data);
-    data[primaryColumn] = _ref(table).length;
-    return data;
+    final result = <String, dynamic>{
+      primaryColumn: _ref(table).length + 1,
+      ...data,
+    };
+    _ref(table).add(result);
+    return result;
   }
 
   @override
