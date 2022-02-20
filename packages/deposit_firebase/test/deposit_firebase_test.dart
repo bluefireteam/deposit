@@ -100,13 +100,6 @@ void main() {
           isNotNull,
         );
       });
-
-      test('throws when a field other than id is used', () async {
-        expect(
-          () => adapter.getById('cars', 'other', '123'),
-          throwsArgumentError,
-        );
-      });
     });
 
     test('page throws unsupported', () {
@@ -128,15 +121,21 @@ void main() {
         await adapter.exists('cars', 'brand', 'VW'),
         isFalse,
       );
+
+      // Just making sure the adpaters didn't accidentally created
+      // a new doc instead of updating
+      final docs = await adapter.by('cars', 'brand', 'VW');
+      expect(docs.length, equals(0));
     });
 
     test('updates a doc', () async {
-      await adapter.add('cars', 'id', {
+      final value = await adapter.add('cars', 'id', {
         'brand': 'VW',
         'model': 'Virtus',
       });
 
       await adapter.update('cars', 'id', {
+        'id': value['id'],
         'brand': 'VW',
         'model': 'Nivus',
       });
@@ -145,6 +144,11 @@ void main() {
         await adapter.exists('cars', 'model', 'Nivus'),
         isTrue,
       );
+
+      // Just making sure the adpaters didn't accidentally created
+      // a new doc instead of updating
+      final docs = await adapter.by('cars', 'brand', 'VW');
+      expect(docs.length, equals(1));
     });
   });
 }

@@ -52,18 +52,8 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
 
   @override
   Future<bool> exists(String table, String primaryColumn, String id) async {
-    if (primaryColumn == 'id') {
-      final doc = await _firestore.collection(table).doc(id);
-      final snap = await doc.get();
-      return snap.exists;
-    } else {
-      final data = await _firestore
-          .collection(table)
-          .where(primaryColumn, isEqualTo: id)
-          .get();
-
-      return data.docs.isNotEmpty;
-    }
+    final snap = await _getDoc(primaryColumn, table, id);
+    return snap?.exists ?? false;
   }
 
   @override
@@ -72,13 +62,13 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     String id,
   ) async {
-    if (primaryColumn != 'id') {
-      throw ArgumentError(
-        'Firebase can only get documents by id using the "id" field',
-      );
+    final snap = await _getDoc(primaryColumn, table, id);
+
+    if (snap == null) {
+      /// Probably better to change this method signature to allow null
+      throw Exception('Unable to find doc');
     }
-    final doc = await _firestore.collection(table).doc(id);
-    final snap = await doc.get();
+
     return snap.toMap();
   }
 
@@ -100,9 +90,8 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final doc = await _firestore.collection(table).doc(data[primaryColumn]);
-
-    await doc.delete();
+    final doc = await _getDocRef(primaryColumn, table, data[primaryColumn]);
+    await doc?.delete();
   }
 
   @override
@@ -111,10 +100,46 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final doc = await _firestore.collection(table).doc(data[primaryColumn]);
-
-    await doc.update(data);
+    final doc = await _getDocRef(primaryColumn, table, data[primaryColumn]);
+    await doc?.update(data);
 
     return data;
+  }
+
+  Future<DocumentReference?> _getDocRef(
+      String primaryColumn,
+      String table,
+      String id,
+  ) async {
+    final snap = await _getDoc(primaryColumn, table, id);
+
+    if (snap != null) {
+      final doc = _firestore.collection(table).doc(snap.id);
+      return doc;
+    }
+
+    return null;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>?> _getDoc(
+      String primaryColumn,
+      String table,
+      String id,
+  ) async {
+    if (primaryColumn == 'id') {
+      final doc = await _firestore.collection(table).doc(id);
+      return await doc.get();
+    } else {
+      final data = await _firestore
+          .collection(table)
+          .where(primaryColumn, isEqualTo: id)
+          .get();
+
+      if (data.docs.isEmpty) {
+        return null;
+      }
+
+      return data.docs.first;
+    }
   }
 }
