@@ -13,9 +13,11 @@ extension _QueryDocumentSnapshotX on DocumentSnapshot {
 }
 
 class FirebaseDepositAdapter extends DepositAdapter<String> {
-  FirebaseDepositAdapter({required this.firestore});
+  FirebaseDepositAdapter({
+    required FirebaseFirestore firestore,
+  }) : _firestore = firestore;
 
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
 
   @override
   Future<Map<String, dynamic>> add(
@@ -23,7 +25,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final value = await firestore.collection(table).add(data);
+    final value = await _firestore.collection(table).add(data);
 
     final snapshot = await value.snapshots().first;
     final returnedData = snapshot.data();
@@ -37,7 +39,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
 
   @override
   Future<List<Map<String, dynamic>>> by(String table, String key, value) async {
-    final data = await firestore
+    final data = await _firestore
         .collection(table)
         .where(
           key,
@@ -51,11 +53,11 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
   @override
   Future<bool> exists(String table, String primaryColumn, String id) async {
     if (primaryColumn == 'id') {
-      final doc = await firestore.collection(table).doc(id);
+      final doc = await _firestore.collection(table).doc(id);
       final snap = await doc.get();
       return snap.exists;
     } else {
-      final data = await firestore
+      final data = await _firestore
           .collection(table)
           .where(primaryColumn, isEqualTo: id)
           .get();
@@ -75,7 +77,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
         'Firebase can only get documents by id using the "id" field',
       );
     }
-    final doc = await firestore.collection(table).doc(id);
+    final doc = await _firestore.collection(table).doc(id);
     final snap = await doc.get();
     return snap.toMap();
   }
@@ -98,7 +100,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final doc = await firestore.collection(table).doc(data[primaryColumn]);
+    final doc = await _firestore.collection(table).doc(data[primaryColumn]);
 
     await doc.delete();
   }
@@ -109,7 +111,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final doc = await firestore.collection(table).doc(data[primaryColumn]);
+    final doc = await _firestore.collection(table).doc(data[primaryColumn]);
 
     await doc.update(data);
 
