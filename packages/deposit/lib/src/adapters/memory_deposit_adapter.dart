@@ -2,7 +2,14 @@ import 'package:deposit/deposit.dart';
 
 /// A memory only implementation of [DepositAdapter].
 class MemoryDepositAdapter extends DepositAdapter<int> {
-  final Map<String, List<Map<String, dynamic>>> _memory = {};
+  /// Construct a new [MemoryDepositAdapter].
+  ///
+  /// You can pass an optional [memory] to start with a certain database.
+  MemoryDepositAdapter({
+    Map<String, List<Map<String, dynamic>>>? memory,
+  }) : _memory = memory ?? {};
+
+  final Map<String, List<Map<String, dynamic>>> _memory;
 
   List<Map<String, dynamic>> _ref(String table) => _memory[table] ??= [];
 
@@ -76,7 +83,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    _ref(table).removeAt(data[primaryColumn] as int);
+    _ref(table).removeAt((data[primaryColumn] as int) - 1);
   }
 
   @override
@@ -85,6 +92,6 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    return _ref(table)[data[primaryColumn] as int] = data;
+    return _ref(table)[(data[primaryColumn] as int) - 1] = data;
   }
 }
