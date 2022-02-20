@@ -1,3 +1,3 @@
 # Deposit Firebase
 
-Firebase implementation for Deposit
+Firebase implementation for Deposit for Flutter apps
