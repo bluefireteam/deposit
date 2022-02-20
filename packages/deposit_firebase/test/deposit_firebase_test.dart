@@ -10,7 +10,7 @@ void main() {
     late FirebaseFirestore instance;
     late FirebaseDepositAdapter adapter;
 
-    setUp(() async {
+    setUp(() {
       instance = FakeFirebaseFirestore();
       adapter = FirebaseDepositAdapter(firestore: instance);
     });
