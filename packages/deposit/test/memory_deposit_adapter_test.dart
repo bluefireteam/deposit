@@ -3,84 +3,128 @@ import 'package:test/test.dart';
 
 void main() {
   group('MemoryDepositAdapter', () {
+    late Map<String, List<Map<String, dynamic>>> memory;
     late MemoryDepositAdapter adapter;
-    const tableName = 'test_table';
-    const primaryColumn = 'id';
 
     setUp(() {
-      adapter = MemoryDepositAdapter();
+      memory = {'cars': []};
+      adapter = MemoryDepositAdapter(memory: memory);
     });
 
     group('.add()', () {
       test('should add a single item', () async {
-        // Arrange
-        final data = {'key': 'value'};
+        await adapter.add(
+          'cars',
+          'id',
+          <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+        );
 
-        // Act
-        final result = await adapter.add(tableName, primaryColumn, data);
+        final result = memory['cars'];
 
-        // Assert
-        expect(result['id'], equals(1));
-        expect(result['key'], equals(data['key']));
+        expect(result, isNotNull);
+        expect(result?.length, equals(1));
+        expect(result?.first['brand'], equals('VW'));
+        expect(result?.first['model'], equals('Nivus'));
       });
     });
 
     group('.by()', () {
-      setUp(() async {
-        for (var i = 0; i < 5; i++) {
-          await adapter.add(
-            tableName,
-            primaryColumn,
-            <String, dynamic>{'key': i},
-          );
-        }
+      setUp(() {
+        memory['cars']?.addAll([
+          <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Nivus',
+          },
+          <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Virtus',
+          },
+          <String, dynamic>{
+            'brand': 'GM',
+            'model': 'Onix',
+          }
+        ]);
       });
 
       test('should return a list with a single item', () async {
-        // Act
-        final result = await adapter.by(tableName, 'key', 2);
-
-        // Assert
-        expect(result.length, equals(1));
-        expect(result.first['id'], equals(3));
-        expect(result.first['key'], equals(2));
+        final list = await adapter.by('cars', 'brand', 'VW');
+        expect(list.length, equals(2));
       });
 
       test('should return an empty list', () async {
-        // Act
-        final result = await adapter.by(tableName, 'key', 6);
-
-        // Assert
+        final result = await adapter.by('cars', 'brand', 'Toyota');
         expect(result.length, equals(0));
       });
     });
 
-    group('.getById()', () {
-      setUp(() async {
-        for (var i = 0; i < 5; i++) {
-          await adapter.add(
-            tableName,
-            primaryColumn,
-            <String, dynamic>{'key': i},
-          );
-        }
+    group('.exists()', () {
+      test('should return true when an item is in the db', () async {
+        memory['cars']?.add(<String, dynamic>{
+          'id': 1,
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
+
+        expect(
+          await adapter.exists('cars', 'id', 1),
+          isTrue,
+        );
       });
+    });
 
-      test('should return a single item', () async {
-        // Act
-        final result = await adapter.getById(tableName, primaryColumn, 2);
+    group('.getById()', () {
+      test('should return an item by id', () async {
+        memory['cars']?.add(<String, dynamic>{
+          'id': 1,
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
 
-        // Assert
-        expect(result['id'], equals(2));
-        expect(result['key'], equals(1));
+        expect(
+          await adapter.getById('cars', 'id', 1),
+          isNotNull,
+        );
       });
 
       test('should throw an exception if no item is found', () async {
-        // Act
-        final result = adapter.getById(tableName, primaryColumn, 6);
+        final result = adapter.getById('cars', 'id', 2);
 
-        // Assert
         expect(result, throwsStateError);
+      });
+    });
+
+    group('.page()', () {});
+
+    group('.remove()', () {
+      test('should remove an item from the db', () async {
+        final data = await adapter.add('cars', 'id', <String, dynamic>{
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
+
+        await adapter.remove('cars', 'id', data);
+
+        expect(await adapter.exists('cars', 'id', data['id'] as int), isFalse);
+      });
+    });
+
+    group('.update()', () {
+      test('should update an item in the db', () async {
+        final data = await adapter.add('cars', 'id', <String, dynamic>{
+          'brand': 'VW',
+          'model': 'Virtus',
+        });
+
+        await adapter.update('cars', 'id', <String, dynamic>{
+          'id': data['id'],
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
+
+        final result = await adapter.by('cars', 'model', 'Nivus');
+
+        expect(result.length, equals(1));
+        expect(result.first['id'], equals(data['id']));
       });
     });
   });
