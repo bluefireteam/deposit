@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:deposit_supabase/deposit_supabase.dart';
-import 'package:supabase/supabase.dart';
-
 Future<HttpServer> supabaseServerMock({
   Map<String, List<Map<String, dynamic>>>? tables,
 }) async {
@@ -195,26 +192,4 @@ Future<void> _handleRestV1(
       throw Exception('Unknown method ${request.method} on ${request.uri}');
   }
   await response.close();
-}
-
-Future<void> main() async {
-  final server = await supabaseServerMock(
-    tables: {
-      'cars': [],
-    },
-  );
-  final client = SupabaseClient(
-    'http://${server.address.host}:${server.port}',
-    'supabaseKey',
-  );
-  final adapter = SupabaseDepositAdapter(client);
-
-  await adapter.add(
-    'cars',
-    'id',
-    <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
-  );
-  final result = await client.from('cars').select().execute();
-  final data = result.data as List;
-  print(data);
 }
