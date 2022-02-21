@@ -67,7 +67,7 @@ class MovieEntity extends Entity {
 ### Deposit
 
 A `Deposit` is a class that provides a single consistent API for the repository pattern. It uses 
-a `Entity` to as a relation on how to read and write data to any given data backend. 
+an `Entity` as a relation on how to read and write data to any given data backend. 
 
 A `Deposit` class has a reference to table/collection on the data backend from which it can read 
 and write data.
