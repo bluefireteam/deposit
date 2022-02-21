@@ -84,6 +84,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     final response = await _from(table).delete().match(<String, dynamic>{
       primaryColumn: data[primaryColumn],
     }).execute();
+    
     if (response.error != null) {
       throw response.error!;
     }
@@ -98,6 +99,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     final response = await _from(table).update(data).match(<String, dynamic>{
       primaryColumn: data[primaryColumn],
     }).execute();
+
     if (response.error != null) {
       throw response.error!;
     }
