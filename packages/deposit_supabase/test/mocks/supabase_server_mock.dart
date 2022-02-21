@@ -50,8 +50,15 @@ Future<void> _handleRestV1(
   final tableName = request.uri.pathSegments.last;
   final table = tables[tableName];
   if (table == null) {
-    // TODO: proper response.
-    throw Exception('Table not found: $tableName');
+    response
+      ..write(jsonEncode({
+        'message': 'relation "public.$tableName" does not exist',
+        'code': '42P01',
+        'details': null,
+        'hint': null
+      }),)
+      ..statusCode = 404;
+    return;
   }
 
   final filters = {...query}
