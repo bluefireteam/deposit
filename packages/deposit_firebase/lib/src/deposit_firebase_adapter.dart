@@ -90,6 +90,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
+    // TODO: Check if the id is not null and throw exception in case it is
     final doc = await _getDocRef(primaryColumn, table, data[primaryColumn]);
     await doc?.delete();
   }
@@ -100,6 +101,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
+    // TODO: Check if the id is not null and throw exception in case it is
     final doc = await _getDocRef(primaryColumn, table, data[primaryColumn]);
     await doc?.update(data);
 
