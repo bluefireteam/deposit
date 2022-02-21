@@ -28,7 +28,7 @@ This package abstracts all the aspects of the pattern into a single consistent A
 
 ### Entity
 
-A `Entity` class is the base of the data model part of the repository pattern. The class defines 
+An `Entity` class is the base of the data model part of the repository pattern. The class defines 
 how data from a backend should be read and it serves as a reference to that data on the backend.
 
 #### Defining an Entity
