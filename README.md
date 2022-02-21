@@ -3,7 +3,7 @@ deposit
 </h1>
 
 <p align="center">
-Why think about your backend when you can let us do it for you? <!-- I am not good with taglines - wolfen -->
+A data backend agnostic repository pattern package for Dart and Flutter
 </p>
 
 <p align="center">
