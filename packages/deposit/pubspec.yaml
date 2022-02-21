@@ -1,6 +1,6 @@
 name: deposit
 description: A data backend agnostic repository pattern package for Dart
-version: 1.0.0
+version: 0.1.0
 homepage: https://github.com/bluefireteam/deposit
 
 environment:

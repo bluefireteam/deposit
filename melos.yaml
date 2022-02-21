@@ -15,7 +15,7 @@ command:
 
 scripts:
   pub:
-    run: melos exec -c 10 dart pub get
+    run: melos exec -c 10 flutter pub get
     description: Run all static analysis checks.
 
   lint:all:
@@ -24,18 +24,18 @@ scripts:
 
   analyze:
     run: |
-      melos exec -c 10 dart analyze --fatal-infos
+      melos exec -c 10 flutter analyze --fatal-infos
     select-package:
       file-exists:
         - analysis_options.yaml
     description: Run `dart analyze` for all packages.
 
   format:
-    run: melos exec dart format .
+    run: melos exec flutter format .
     description: Run `dart format` for all packages.
   
   format:ci:
-    run: melos exec dart format --set-exit-if-changed .
+    run: melos exec dart flutter --set-exit-if-changed .
     description: Run `dart format` for all packages and set exit if it is incorrectly formatted.
 
   dartdoc:
