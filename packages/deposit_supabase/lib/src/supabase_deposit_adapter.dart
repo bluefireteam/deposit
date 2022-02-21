@@ -1,6 +1,7 @@
 import 'package:deposit/deposit.dart';
 import 'package:supabase/supabase.dart';
 
+/// A Supabase backed implementation of [DepositAdapter].
 class SupabaseDepositAdapter extends DepositAdapter<int> {
   const SupabaseDepositAdapter(this._client);
 
@@ -13,9 +14,12 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     Map<String, dynamic> data,
-  ) {
-    // TODO(wolfen): implement add
-    throw UnimplementedError();
+  ) async {
+    final response = await _from(table).insert([data]).execute();
+    if (response.error != null) {
+      throw response.error!;
+    }
+    return (response.data as List<dynamic>).first as Map<String, dynamic>;
   }
 
   @override
@@ -28,7 +32,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data as List<Map<String, dynamic>>;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   @override
@@ -59,7 +63,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     required int skip,
     OrderBy? orderBy,
   }) async {
-    final query = _from(table).select();
+    final query = _from(table).select().range(skip, limit);
     if (orderBy != null) {
       query.order(orderBy.key, ascending: orderBy.ascending);
     }
@@ -68,7 +72,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     if (response.error != null) {
       throw response.error!;
     }
-    return response.data as List<Map<String, dynamic>>;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   @override
@@ -80,6 +84,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     final response = await _from(table).delete().match(<String, dynamic>{
       primaryColumn: data[primaryColumn],
     }).execute();
+    
     if (response.error != null) {
       throw response.error!;
     }
@@ -90,8 +95,14 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     Map<String, dynamic> data,
-  ) {
-    // TODO(wolfen): implement update
-    throw UnimplementedError();
+  ) async {
+    final response = await _from(table).update(data).match(<String, dynamic>{
+      primaryColumn: data[primaryColumn],
+    }).execute();
+
+    if (response.error != null) {
+      throw response.error!;
+    }
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>().first;
   }
 }
