@@ -5,7 +5,7 @@ import 'package:deposit/deposit.dart';
 ///
 /// It is designed to be subclassed so end-users can add their own
 /// business-specific methods to it.
-abstract class Deposit<E extends Entity, Id> {
+class Deposit<E extends Entity, Id> {
   /// Construct a new [Deposit] that will retrieve it's entities from [table].
   ///
   /// If [adapter] is not given it will use the [defaultAdapter] as the data
