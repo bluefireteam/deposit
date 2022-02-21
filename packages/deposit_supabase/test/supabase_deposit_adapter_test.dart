@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:deposit/deposit.dart';
 import 'package:deposit_supabase/deposit_supabase.dart';
 import 'package:supabase/supabase.dart';
 import 'package:test/test.dart';
@@ -8,33 +9,33 @@ import 'mocks/supabase_server_mock.dart';
 
 void main() {
   group('SupabaseDepositAdapter', () {
-    late HttpServer supbaseMockServer;
+    late HttpServer supabaseMockServer;
     late SupabaseClient client;
     late SupabaseDepositAdapter adapter;
 
     setUp(() async {
-      supbaseMockServer = await supabaseServerMock(
+      supabaseMockServer = await supabaseServerMock(
         tables: {
           'cars': [],
         },
       );
       client = SupabaseClient(
-        'http://${supbaseMockServer.address.host}:${supbaseMockServer.port}',
+        'http://${supabaseMockServer.address.host}:${supabaseMockServer.port}',
         'supabaseKey',
       );
       adapter = SupabaseDepositAdapter(client);
     });
 
     tearDown(() async {
-      await supbaseMockServer.close();
+      await supabaseMockServer.close();
     });
 
-    test('should be instantiated', () {
+    test('can be instantiated', () {
       expect(SupabaseDepositAdapter(client), isNotNull);
     });
 
     group('.add()', () {
-      test('should add a single item', () async {
+      test('can add a single item', () async {
         await adapter.add(
           'cars',
           'id',
@@ -68,19 +69,19 @@ void main() {
         ]);
       });
 
-      test('should return a list with a single item', () async {
+      test('returns a list of items', () async {
         final list = await adapter.by('cars', 'brand', 'VW');
         expect(list.length, equals(2));
       });
 
-      test('should return an empty list', () async {
+      test('returns an empty list', () async {
         final result = await adapter.by('cars', 'brand', 'Toyota');
         expect(result.length, equals(0));
       });
     });
 
     group('.exists()', () {
-      test('should return true when an item is in the db', () async {
+      test('returns true when an item is in the db', () async {
         final result = await client.from('cars').insert({
           'id': 1,
           'brand': 'VW',
@@ -96,7 +97,7 @@ void main() {
     });
 
     group('.getById()', () {
-      test('should return an item by id', () async {
+      test('returns an item by id', () async {
         final result = await client.from('cars').insert({
           'id': 1,
           'brand': 'VW',
@@ -111,10 +112,67 @@ void main() {
       });
     });
 
-    group('.page()', () {});
+    group('.page()', () {
+      setUp(() async {
+        await Future.wait([
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Nivus',
+          }),
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Virtus',
+          }),
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'GM',
+            'model': 'Onix',
+          })
+        ]);
+      });
+
+      test('returns a paginated list of items', () async {
+        final result = await adapter.page('cars', limit: 2, skip: 1);
+
+        expect(result.length, equals(2));
+      });
+
+      test('returns a paginated list of items', () async {
+        final result = await adapter.page('cars', limit: 2, skip: 1);
+
+        expect(result.length, equals(2));
+      });
+
+      test('returns a paginated list of items ordered by brand ascending',
+          () async {
+        final result = await adapter.page(
+          'cars',
+          limit: 2,
+          skip: 1,
+          orderBy: OrderBy('brand', ascending: true),
+        );
+
+        expect(result.length, equals(2));
+        expect(result[0]['brand'], equals('VW'));
+        expect(result[1]['brand'], equals('VW'));
+      });
+
+      test('returns a paginated list of items ordered by brand descending',
+          () async {
+        final result = await adapter.page(
+          'cars',
+          limit: 2,
+          skip: 1,
+          orderBy: OrderBy('brand'),
+        );
+
+        expect(result.length, equals(2));
+        expect(result[0]['brand'], equals('VW'));
+        expect(result[1]['brand'], equals('GM'));
+      });
+    });
 
     group('.remove()', () {
-      test('should remove an item from the db', () async {
+      test('removes an item', () async {
         final data = await adapter.add('cars', 'id', <String, dynamic>{
           'id': 1,
           'brand': 'VW',
@@ -130,7 +188,7 @@ void main() {
     });
 
     group('.update()', () {
-      test('should update an item in the db', () async {
+      test('updates an item', () async {
         final data = await adapter.add('cars', 'id', <String, dynamic>{
           'id': 1,
           'brand': 'VW',

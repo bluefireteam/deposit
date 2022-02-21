@@ -30,7 +30,6 @@ Future<void> _handleRequests(
   Map<String, List<Map<String, dynamic>>> tables,
 ) async {
   await for (final request in server) {
-    print(request.uri);
     final uri = request.uri;
     if (uri.pathSegments.first == 'rest') {
       switch (uri.pathSegments[1]) {
@@ -60,7 +59,9 @@ Future<void> _handleRestV1(
 
   final filters = {...query}
     ..remove('select')
-    ..remove('limit');
+    ..remove('limit')
+    ..remove('offset')
+    ..remove('order');
   bool filter(Map<String, dynamic> data) {
     return filters.entries.every((entry) {
       final key = entry.key;
@@ -100,6 +101,38 @@ Future<void> _handleRestV1(
           'application/vnd.pgrst.object+json') {
         response.write(json.encode(data.first));
       } else {
+        int order(Map<String, dynamic> d1, Map<String, dynamic> d2) {
+          final order = query['order']!;
+          final dirtyKey = order.split('.').first;
+          final key = dirtyKey.substring(1, dirtyKey.length - 1);
+          final asc = order.split('.')[1] == 'asc';
+
+          final dynamic value1 = d1[key];
+          final dynamic value2 = d2[key];
+
+          if (asc) {
+            if (value1 is Comparable) {
+              return value1.compareTo(value2);
+            }
+          } else {
+            if (value2 is Comparable) {
+              return value2.compareTo(value1);
+            }
+          }
+
+          return 0;
+        }
+
+        if (query['order'] != null) {
+          data = data.toList()..sort(order);
+        }
+
+        // If there are offsets.
+        final offset = int.tryParse(query['offset'] ?? '');
+        if (offset != null) {
+          data = data.skip(offset);
+        }
+
         // If there are limits.
         final limit = int.tryParse(query['limit'] ?? '');
         if (limit != null) {

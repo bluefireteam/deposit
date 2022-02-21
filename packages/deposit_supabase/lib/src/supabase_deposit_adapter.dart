@@ -63,7 +63,7 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     required int skip,
     OrderBy? orderBy,
   }) async {
-    final query = _from(table).select();
+    final query = _from(table).select().range(skip, limit);
     if (orderBy != null) {
       query.order(orderBy.key, ascending: orderBy.ascending);
     }
