@@ -74,8 +74,8 @@ and write data.
 
 #### Creating a Deposit
 
-You can create `Deposit`s in two ways. The first one is by extending from the class itself, this 
-allows for adding custom methods tailed to any specific usecase:
+You can create a `Deposit` in two different ways. The first one is by extending from the class 
+itself, this allows for adding custom methods tailed to any specific usecase:
 
 ```dart
 class MovieDeposit extends Deposit<MovieEntity, int> {
@@ -106,8 +106,8 @@ The following data backends are officially supported:
 
 #### Setting the default adapter
 
-By setting the `defaultAdapter` any `Deposit` instance that did not receive an `adapter` on 
-initialization will use the default adapter:
+By setting the `Deposit.defaultAdapter` any `Deposit` instance that did not receive an `adapter` 
+on initialization will use the default adapter:
 
 ```dart
 Deposit.defaultAdapter = MemoryDepositAdapter();
