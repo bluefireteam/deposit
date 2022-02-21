@@ -9,7 +9,7 @@ A data backend agnostic repository pattern package for Dart and Flutter.
 <p align="center">
   <a title="Pub" href="https://pub.dev/packages/deposit" ><img src="https://img.shields.io/pub/v/deposit.svg?style=popout" /></a>
   <img src="https://github.com/bluefireteam/deposit/workflows/cicd/badge.svg?branch=main&event=push" alt="Test" />
-  <img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)" alt="style: very good analysis" />
+  <img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg" alt="style: very good analysis" />
   <img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="license: MIT" />
   <a title="Discord" href="https://discord.gg/pxrBmy4" ><img src="https://img.shields.io/discord/509714518008528896.svg" /></a>
   <a title="Melos" href="https://github.com/invertase/melos"><img src="https://img.shields.io/badge/maintained%20with-melos-f700ff.svg"/></a>
