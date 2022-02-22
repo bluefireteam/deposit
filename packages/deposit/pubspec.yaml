@@ -1,6 +1,6 @@
 name: deposit
 description: A data backend agnostic repository pattern package for Dart and Flutter
-version: 0.1.0
+version: 0.0.0
 repository: https://github.com/bluefireteam/deposit/tree/main/packages/deposit
 issue_tracker: https://github.com/bluefireteam/deposit
 homepage: https://github.com/bluefireteam/deposit

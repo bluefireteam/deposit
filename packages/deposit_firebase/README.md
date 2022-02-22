@@ -1,3 +1,3 @@
-# Deposit Firebase
+# deposit_firestore
 
-Firebase implementation for Deposit for Flutter apps
+Provides a Firestore adapter for the [deposit](https://pub.dev/packages/deposit) package.

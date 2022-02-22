@@ -101,7 +101,7 @@ by default no adapter set, this should be done explicitly by the package user.
 
 The following data backends are officially supported:
 
-- [deposit_firebase](https://pub.dev/packages/deposit_firebase)
+- [deposit_firestore](https://pub.dev/packages/deposit_firestore)
 - [deposit_supabase](https://pub.dev/packages/deposit_supabase)
 
 #### Setting the default adapter

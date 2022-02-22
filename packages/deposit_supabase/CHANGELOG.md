@@ -1,3 +1,3 @@
-## 0.1.0
+## 0.0.1
 
-- Initial version.
+- Initial release of `deposit_supabase`.

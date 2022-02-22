@@ -12,8 +12,8 @@ extension _QueryDocumentSnapshotX on DocumentSnapshot {
   }
 }
 
-class FirebaseDepositAdapter extends DepositAdapter<String> {
-  FirebaseDepositAdapter({
+class FirestoreDepositAdapter extends DepositAdapter<String> {
+  FirestoreDepositAdapter({
     required FirebaseFirestore firestore,
   }) : _firestore = firestore;
 
@@ -80,7 +80,7 @@ class FirebaseDepositAdapter extends DepositAdapter<String> {
     OrderBy? orderBy,
   }) async {
     throw UnsupportedError(
-      "Firebase adapter can't paginate with numeric offset",
+      "Firestore adapter can't paginate with numeric offset",
     );
   }
 
