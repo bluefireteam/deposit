@@ -1,1 +1,3 @@
 coverage/
+*.iml
+.idea/

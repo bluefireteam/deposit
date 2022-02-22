@@ -9,8 +9,7 @@ environment:
   sdk: '>=2.15.1 <3.0.0'
 
 dependencies: 
-  deposit:
-    path: ../deposit
+  deposit: ^0.0.1
   supabase: ^0.2.13
 
 dev_dependencies: 
