@@ -2,21 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:deposit_firebase/deposit_firebase.dart';
+import 'package:deposit_firestore/deposit_firestore.dart';
 
 void main() {
-  group('FirebaseDepositAdapter', () {
+  group('FirestoreDepositAdapter', () {
     late FirebaseFirestore instance;
-    late FirebaseDepositAdapter adapter;
+    late FirestoreDepositAdapter adapter;
 
     setUp(() {
       instance = FakeFirebaseFirestore();
-      adapter = FirebaseDepositAdapter(firestore: instance);
+      adapter = FirestoreDepositAdapter(firestore: instance);
     });
 
     test('can be instantiated', () {
       expect(
-        FirebaseDepositAdapter(firestore: instance),
+        FirestoreDepositAdapter(firestore: instance),
         isNotNull,
       );
     });
