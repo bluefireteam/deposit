@@ -1,3 +1,3 @@
 ## 0.0.1
 
-- Initial release of `deposit`.
+ - Initial release of `deposit`.

@@ -1,6 +1,6 @@
 name: deposit_supabase
 description: Provides a Supabase adapter for the deposit package
-version: 0.0.0
+version: 0.0.1
 repository: https://github.com/bluefireteam/deposit/tree/main/packages/deposit_supabase
 issue_tracker: https://github.com/bluefireteam/deposit
 homepage: https://github.com/bluefireteam/deposit

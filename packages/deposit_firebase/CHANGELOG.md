@@ -1,3 +1,3 @@
 ## 0.0.1
 
-- Initial release of `deposit_firestore`.
+ - Initial release of `deposit_firestore`.
