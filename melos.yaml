@@ -61,7 +61,11 @@ scripts:
   test:coverage:
     run: |
       rm ./coverage/*.info
-      melos exec flutter test --coverage --coverage-path ../../coverage/\$MELOS_PACKAGE_NAME.info
+      
+      if ! melos exec flutter test --coverage --coverage-path ../../coverage/\$MELOS_PACKAGE_NAME.info; then
+        exit 1
+      fi
+
 
       tracefiles=""
       for file in ./coverage/*.info; do

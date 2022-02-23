@@ -12,7 +12,7 @@ void main() {
     });
 
     group('.add()', () {
-      test('should add a single item', () async {
+      test('add a single item', () async {
         await adapter.add(
           'cars',
           'id',
@@ -21,10 +21,30 @@ void main() {
 
         final result = memory['cars'];
 
-        expect(result, isNotNull);
-        expect(result?.length, equals(1));
-        expect(result?.first['brand'], equals('VW'));
-        expect(result?.first['model'], equals('Nivus'));
+        expect(result!.length, equals(1));
+        expect(result.first['brand'], equals('VW'));
+        expect(result.first['model'], equals('Nivus'));
+      });
+    });
+
+    group('.addAll()', () {
+      test('add multiple items', () async {
+        await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        final result = memory['cars'];
+
+        expect(result!.length, equals(2));
+        expect(result[0]['brand'], equals('VW'));
+        expect(result[0]['model'], equals('Nivus'));
+        expect(result[1]['brand'], equals('VW'));
+        expect(result[1]['model'], equals('Virtus'));
       });
     });
 
@@ -46,19 +66,19 @@ void main() {
         ]);
       });
 
-      test('should return a list with a single item', () async {
+      test('returns a list with a single item', () async {
         final list = await adapter.by('cars', 'brand', 'VW');
         expect(list.length, equals(2));
       });
 
-      test('should return an empty list', () async {
+      test('returns an empty list', () async {
         final result = await adapter.by('cars', 'brand', 'Toyota');
         expect(result.length, equals(0));
       });
     });
 
     group('.exists()', () {
-      test('should return true when an item is in the db', () async {
+      test('returns true when an item is in the db', () async {
         memory['cars']?.add(<String, dynamic>{
           'id': 1,
           'brand': 'VW',
@@ -73,7 +93,7 @@ void main() {
     });
 
     group('.getById()', () {
-      test('should return an item by id', () async {
+      test('returns an item by id', () async {
         memory['cars']?.add(<String, dynamic>{
           'id': 1,
           'brand': 'VW',
@@ -86,7 +106,7 @@ void main() {
         );
       });
 
-      test('should throw an exception if no item is found', () async {
+      test('throws an exception if no item is found', () async {
         final result = adapter.getById('cars', 'id', 2);
 
         expect(result, throwsStateError);
@@ -96,7 +116,7 @@ void main() {
     group('.page()', () {});
 
     group('.remove()', () {
-      test('should remove an item from the db', () async {
+      test('remove an item from the db', () async {
         final data = await adapter.add('cars', 'id', <String, dynamic>{
           'brand': 'VW',
           'model': 'Nivus',
@@ -108,23 +128,53 @@ void main() {
       });
     });
 
-    group('.update()', () {
-      test('should update an item in the db', () async {
-        final data = await adapter.add('cars', 'id', <String, dynamic>{
-          'brand': 'VW',
-          'model': 'Virtus',
-        });
+    group('.removeAll()', () {
+      test('removes multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'id': 1, 'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'id': 2, 'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
 
-        await adapter.update('cars', 'id', <String, dynamic>{
-          'id': data['id'],
-          'brand': 'VW',
-          'model': 'Nivus',
-        });
+        await adapter.removeAll('cars', 'id', data);
 
         final result = await adapter.by('cars', 'model', 'Nivus');
 
-        expect(result.length, equals(1));
-        expect(result.first['id'], equals(data['id']));
+        expect(result.length, equals(0));
+      });
+    });
+
+    group('.updateAll()', () {
+      test('update multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'id': 1, 'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'id': 2, 'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        await adapter.updateAll('cars', 'id', [
+          <String, dynamic>{
+            'id': data[0]['id'],
+            'brand': 'Toyota',
+            'model': 'Yaris',
+          },
+          <String, dynamic>{
+            'id': data[1]['id'],
+            'brand': 'Toyota',
+            'model': 'Ayigo',
+          },
+        ]);
+
+        final result = await adapter.by('cars', 'brand', 'Toyota');
+
+        expect(result.length, equals(2));
+        expect(result[0]['id'], equals(data[0]['id']));
       });
     });
   });

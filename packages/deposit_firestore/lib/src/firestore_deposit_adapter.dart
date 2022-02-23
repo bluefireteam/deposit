@@ -38,6 +38,15 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
   }
 
   @override
+  Future<List<Map<String, dynamic>>> addAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    return Future.wait(data.map((d) => add(table, primaryColumn, d)));
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> by(String table, String key, value) async {
     final data = await _firestore
         .collection(table)
@@ -96,6 +105,15 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
   }
 
   @override
+  Future<void> removeAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    await Future.wait(data.map((d) => remove(table, primaryColumn, d)));
+  }
+
+  @override
   Future<Map<String, dynamic>> update(
     String table,
     String primaryColumn,
@@ -108,10 +126,19 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
     return data;
   }
 
+  @override
+  Future<List<Map<String, dynamic>>> updateAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    return Future.wait(data.map((d) => update(table, primaryColumn, d)));
+  }
+
   Future<DocumentReference?> _getDocRef(
-      String primaryColumn,
-      String table,
-      String id,
+    String primaryColumn,
+    String table,
+    String id,
   ) async {
     final snap = await _getDoc(primaryColumn, table, id);
 
@@ -124,9 +151,9 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>?> _getDoc(
-      String primaryColumn,
-      String table,
-      String id,
+    String primaryColumn,
+    String table,
+    String id,
   ) async {
     if (primaryColumn == 'id') {
       final doc = await _firestore.collection(table).doc(id);

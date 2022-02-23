@@ -15,11 +15,20 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final response = await _from(table).insert([data]).execute();
+    return (await addAll(table, primaryColumn, [data])).first;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> addAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    final response = await _from(table).insert(data).execute();
     if (response.error != null) {
       throw response.error!;
     }
-    return (response.data as List<dynamic>).first as Map<String, dynamic>;
+    return (response.data as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   @override
@@ -91,6 +100,15 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
   }
 
   @override
+  Future<void> removeAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    await Future.wait(data.map((d) => remove(table, primaryColumn, d)));
+  }
+
+  @override
   Future<Map<String, dynamic>> update(
     String table,
     String primaryColumn,
@@ -104,5 +122,14 @@ class SupabaseDepositAdapter extends DepositAdapter<int> {
       throw response.error!;
     }
     return (response.data as List<dynamic>).cast<Map<String, dynamic>>().first;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> updateAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    return Future.wait(data.map((d) => update(table, primaryColumn, d)));
   }
 }

@@ -40,6 +40,27 @@ void main() {
       });
     });
 
+    group('.addAll()', () {
+      test('can add multiple items', () async {
+        await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        final snapshot = await instance.collection('cars').get();
+
+        expect(snapshot.docs.length, equals(2));
+        expect(snapshot.docs[0]['brand'], equals('VW'));
+        expect(snapshot.docs[0]['model'], equals('Nivus'));
+        expect(snapshot.docs[1]['brand'], equals('VW'));
+        expect(snapshot.docs[1]['model'], equals('Virtus'));
+      });
+    });
+
     group('.by()', () {
       setUp(() async {
         await Future.wait([
@@ -143,6 +164,31 @@ void main() {
       });
     });
 
+    group('.removeAll()', () {
+      test('removes multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        await adapter.removeAll('cars', 'id', data);
+
+        expect(
+          await adapter.exists('cars', 'brand', 'VW'),
+          isFalse,
+        );
+
+        // Just making sure the adapter didn't accidentally create
+        // new docs instead of deleting one.
+        final docs = await adapter.by('cars', 'brand', 'VW');
+        expect(docs.length, equals(0));
+      });
+    });
+
     group('.update()', () {
       test('updates a doc', () async {
         final value = await adapter.add('cars', 'id', {
@@ -165,6 +211,42 @@ void main() {
         // a new doc instead of updating one.
         final docs = await adapter.by('cars', 'brand', 'VW');
         expect(docs.length, equals(1));
+      });
+    });
+
+    group('.updateAll()', () {
+      test('update multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        await adapter.updateAll('cars', 'id', [
+          <String, dynamic>{
+            'id': data[0]['id'],
+            'brand': 'Toyota',
+            'model': 'Yaris',
+          },
+          <String, dynamic>{
+            'id': data[1]['id'],
+            'brand': 'Toyota',
+            'model': 'Ayigo',
+          },
+        ]);
+
+        expect(
+          await adapter.exists('cars', 'model', 'Ayigo'),
+          isTrue,
+        );
+
+        // Just making sure the adapter didn't accidentally created
+        // new docs instead of updating one.
+        final docs = await adapter.by('cars', 'brand', 'Toyota');
+        expect(docs.length, equals(2));
       });
     });
   });

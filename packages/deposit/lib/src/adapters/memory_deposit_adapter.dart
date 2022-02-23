@@ -7,11 +7,20 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
   /// You can pass an optional [memory] to start with a certain database.
   MemoryDepositAdapter({
     Map<String, List<Map<String, dynamic>>>? memory,
-  }) : _memory = memory ?? {};
+  }) : _memory = memory ?? {} {
+    _idCounters = {
+      for (final key in _memory.keys) key: _memory[key]!.length,
+    };
+  }
 
   final Map<String, List<Map<String, dynamic>>> _memory;
 
+  late final Map<String, int> _idCounters;
+
   List<Map<String, dynamic>> _ref(String table) => _memory[table] ??= [];
+
+  int _count(String table) =>
+      _idCounters[table] = (_idCounters[table] ?? 0) + 1;
 
   @override
   Future<Map<String, dynamic>> add(
@@ -20,11 +29,20 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     Map<String, dynamic> data,
   ) async {
     final result = <String, dynamic>{
-      primaryColumn: _ref(table).length + 1,
+      primaryColumn: _count(table),
       ...data,
     };
     _ref(table).add(result);
     return result;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> addAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    return Future.wait(data.map((d) => add(table, primaryColumn, d)));
   }
 
   @override
@@ -83,7 +101,18 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    _ref(table).removeAt((data[primaryColumn] as int) - 1);
+    _ref(table).removeWhere(
+      (d) => d[primaryColumn] == data[primaryColumn],
+    );
+  }
+
+  @override
+  Future<void> removeAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    await Future.wait(data.map((d) => remove(table, primaryColumn, d)));
   }
 
   @override
@@ -92,6 +121,20 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    return _ref(table)[(data[primaryColumn] as int) - 1] = data;
+    final result = await getById(
+      table,
+      primaryColumn,
+      data[primaryColumn] as int,
+    );
+    return result..addAll(data);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> updateAll(
+    String table,
+    String primaryColumn,
+    List<Map<String, dynamic>> data,
+  ) async {
+    return Future.wait(data.map((d) => update(table, primaryColumn, d)));
   }
 }
