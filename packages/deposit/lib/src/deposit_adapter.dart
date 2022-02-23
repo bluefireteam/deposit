@@ -40,6 +40,7 @@ abstract class DepositAdapter<Id> {
     Map<String, dynamic> data,
   );
 
+  /// Store multiple items in the backend and return the newly stored data.
   Future<List<Map<String, dynamic>>> addAll(
     String table,
     String primaryColumn,
@@ -53,6 +54,7 @@ abstract class DepositAdapter<Id> {
     Map<String, dynamic> data,
   );
 
+  /// Update multiple items in the backend and return the newly updated data.
   Future<List<Map<String, dynamic>>> updateAll(
     String table,
     String primaryColumn,
@@ -66,6 +68,7 @@ abstract class DepositAdapter<Id> {
     Map<String, dynamic> data,
   );
 
+  /// Remove multiple items in the backend.
   Future<void> removeAll(
     String table,
     String primaryColumn,
