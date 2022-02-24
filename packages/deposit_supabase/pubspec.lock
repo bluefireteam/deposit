@@ -81,9 +81,9 @@ packages:
   deposit:
     dependency: "direct main"
     description:
-      name: deposit
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../deposit"
+      relative: true
+    source: path
     version: "0.0.1"
   file:
     dependency: transitive

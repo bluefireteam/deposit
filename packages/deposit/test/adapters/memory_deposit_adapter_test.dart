@@ -214,6 +214,27 @@ void main() {
       });
     });
 
+    group('.update()', () {
+      test('updates an item', () async {
+        final data = await adapter.add('cars', 'id', <String, dynamic>{
+          'id': 1,
+          'brand': 'VW',
+          'model': 'Virtus',
+        });
+
+        await adapter.update('cars', 'id', <String, dynamic>{
+          'id': data['id'],
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
+
+        final result = await adapter.by('cars', 'model', 'Nivus');
+
+        expect(result.length, equals(1));
+        expect(result.first['id'], equals(data['id']));
+      });
+    });
+
     group('.updateAll()', () {
       test('updates multiple items', () async {
         final data = await adapter.addAll(
