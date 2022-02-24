@@ -12,7 +12,7 @@ void main() {
     });
 
     group('.add()', () {
-      test('add a single item', () async {
+      test('adds a single item', () async {
         await adapter.add(
           'cars',
           'id',
@@ -28,7 +28,7 @@ void main() {
     });
 
     group('.addAll()', () {
-      test('add multiple items', () async {
+      test('adds multiple items', () async {
         await adapter.addAll(
           'cars',
           'id',

@@ -215,7 +215,7 @@ void main() {
     });
 
     group('.updateAll()', () {
-      test('update multiple items', () async {
+      test('updates multiple items', () async {
         final data = await adapter.addAll(
           'cars',
           'id',

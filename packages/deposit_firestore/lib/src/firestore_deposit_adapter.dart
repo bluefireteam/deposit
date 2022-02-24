@@ -42,7 +42,7 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
     String table,
     String primaryColumn,
     List<Map<String, dynamic>> data,
-  ) async {
+  ) {
     return Future.wait(data.map((d) => add(table, primaryColumn, d)));
   }
 
@@ -131,7 +131,7 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
     String table,
     String primaryColumn,
     List<Map<String, dynamic>> data,
-  ) async {
+  ) {
     return Future.wait(data.map((d) => update(table, primaryColumn, d)));
   }
 

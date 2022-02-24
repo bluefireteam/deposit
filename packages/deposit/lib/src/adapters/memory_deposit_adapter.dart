@@ -41,7 +41,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     List<Map<String, dynamic>> data,
-  ) async {
+  ) {
     return Future.wait(data.map((d) => add(table, primaryColumn, d)));
   }
 
@@ -134,7 +134,7 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     String table,
     String primaryColumn,
     List<Map<String, dynamic>> data,
-  ) async {
+  ) {
     return Future.wait(data.map((d) => update(table, primaryColumn, d)));
   }
 }
