@@ -29,8 +29,8 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     Map<String, dynamic> data,
   ) async {
     final result = <String, dynamic>{
-      primaryColumn: _count(table),
       ...data,
+      primaryColumn: _count(table),
     };
     _ref(table).add(result);
     return result;
@@ -75,24 +75,27 @@ class MemoryDepositAdapter extends DepositAdapter<int> {
     required int skip,
     OrderBy? orderBy,
   }) async {
-    final data = _ref(table).skip(skip).take(limit).toList();
+    final data = [..._ref(table)];
 
     if (orderBy != null) {
-      data.sort((a, b) {
-        final dynamic valueA = (orderBy.ascending ? a : b)[orderBy.key];
-        final dynamic valueB = (orderBy.ascending ? b : a)[orderBy.key];
+      data.sort((d1, d2) {
+        final dynamic value1 = d1[orderBy.key];
+        final dynamic value2 = d2[orderBy.key];
 
-        if (valueA is String && valueB is String) {
-          return valueA.compareTo(valueB);
-        } else if (valueA is num && valueB is num) {
-          return valueA.compareTo(valueB);
-        } else if (valueA is List && valueB is List) {
-          return valueA.length < valueB.length ? 1 : -1;
+        if (orderBy.ascending) {
+          if (value1 is Comparable) {
+            return value1.compareTo(value2);
+          }
+        } else {
+          if (value2 is Comparable) {
+            return value2.compareTo(value1);
+          }
         }
+
         return 0;
       });
     }
-    return data;
+    return data.skip(skip).take(limit).toList();
   }
 
   @override
