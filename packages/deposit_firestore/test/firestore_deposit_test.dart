@@ -234,12 +234,12 @@ void main() {
           <String, dynamic>{
             'id': data[1]['id'],
             'brand': 'Toyota',
-            'model': 'Ayigo',
+            'model': 'Aygo',
           },
         ]);
 
         expect(
-          await adapter.exists('cars', 'model', 'Ayigo'),
+          await adapter.exists('cars', 'model', 'Aygo'),
           isTrue,
         );
 
