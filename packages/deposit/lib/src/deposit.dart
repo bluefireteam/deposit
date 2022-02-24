@@ -66,12 +66,34 @@ class Deposit<E extends Entity, Id> {
     return builder(await _adapter.add(table, primaryColumn, entity.toJSON()));
   }
 
+  /// Add a list of entities in the data backend and return the newly stored
+  /// entities.
+  Future<List<E>> addAll(List<E> entities) async {
+    final result = await _adapter.addAll(
+      table,
+      primaryColumn,
+      entities.map((e) => e.toJSON()).toList(),
+    );
+    return result.map(builder).toList();
+  }
+
   /// Update an [Entity] in the data backend and return the newly updated
   /// [Entity].
   Future<E> update(E entity) async {
     return builder(
       await _adapter.update(table, primaryColumn, entity.toJSON()),
     );
+  }
+
+  /// Update a list of entities in the data backend and return the newly updated
+  /// entities.
+  Future<List<E>> updateAll(List<E> entities) async {
+    final result = await _adapter.updateAll(
+      table,
+      primaryColumn,
+      entities.map((e) => e.toJSON()).toList(),
+    );
+    return result.map(builder).toList();
   }
 
   /// Remove an [Entity] in the data backend.
@@ -81,6 +103,14 @@ class Deposit<E extends Entity, Id> {
         entity.toJSON(),
       );
 
+  /// Remove a list of entities in the data backend.
+  Future<void> removeAll(List<E> entities) async {
+    await _adapter.removeAll(
+      table,
+      primaryColumn,
+      entities.map((e) => e.toJSON()).toList(),
+    );
+  }
   // TODO(wolfen): search?
 
   // TODO(wolfen): upsert?

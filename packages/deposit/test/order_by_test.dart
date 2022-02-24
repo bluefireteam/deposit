@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('OrderBy', () {
-    test('should be instantiated', () {
+    test('can be instantiated', () {
       expect(OrderBy('key'), isNotNull);
     });
   });

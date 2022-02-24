@@ -51,6 +51,28 @@ void main() {
       });
     });
 
+    group('.addAll()', () {
+      test('adds multiple items', () async {
+        await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        final result = await client.from('cars').select().execute();
+        final data = (result.data as List).cast<Map>();
+
+        expect(data.length, equals(2));
+        expect(data[0]['brand'], equals('VW'));
+        expect(data[0]['model'], equals('Nivus'));
+        expect(data[1]['brand'], equals('VW'));
+        expect(data[1]['model'], equals('Virtus'));
+      });
+    });
+
     group('.by()', () {
       setUp(() async {
         await Future.wait([
@@ -187,6 +209,25 @@ void main() {
       });
     });
 
+    group('.removeAll()', () {
+      test('removes multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'id': 1, 'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'id': 2, 'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        await adapter.removeAll('cars', 'id', data);
+
+        final result = await adapter.by('cars', 'model', 'Nivus');
+
+        expect(result.length, equals(0));
+      });
+    });
+
     group('.update()', () {
       test('updates an item', () async {
         final data = await adapter.add('cars', 'id', <String, dynamic>{
@@ -205,6 +246,37 @@ void main() {
 
         expect(result.length, equals(1));
         expect(result.first['id'], equals(data['id']));
+      });
+    });
+
+    group('.updateAll()', () {
+      test('updates multiple items', () async {
+        final data = await adapter.addAll(
+          'cars',
+          'id',
+          [
+            <String, dynamic>{'id': 1, 'brand': 'VW', 'model': 'Nivus'},
+            <String, dynamic>{'id': 2, 'brand': 'VW', 'model': 'Virtus'},
+          ],
+        );
+
+        await adapter.updateAll('cars', 'id', [
+          <String, dynamic>{
+            'id': data[0]['id'],
+            'brand': 'Toyota',
+            'model': 'Yaris',
+          },
+          <String, dynamic>{
+            'id': data[1]['id'],
+            'brand': 'Toyota',
+            'model': 'Ayigo',
+          },
+        ]);
+
+        final result = await adapter.by('cars', 'brand', 'Toyota');
+
+        expect(result.length, equals(2));
+        expect(result[0]['id'], equals(data[0]['id']));
       });
     });
   });
