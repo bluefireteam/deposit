@@ -25,7 +25,16 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    final value = await _firestore.collection(table).add(data);
+    assert(
+      data[primaryColumn] == null,
+      'Firestore adapter only works with auto generated ids, '
+      'be sure to pass null on primary column',
+    );
+
+    final _data = { ...data };
+    _data.remove(primaryColumn);
+
+    final value = await _firestore.collection(table).add(_data);
 
     final snapshot = await value.snapshots().first;
     final returnedData = snapshot.data();

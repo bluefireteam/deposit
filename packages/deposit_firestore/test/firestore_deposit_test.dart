@@ -35,6 +35,7 @@ void main() {
         final snapshot = await instance.collection('cars').get();
 
         expect(snapshot.docs.length, equals(1));
+        expect(snapshot.docs.first.id, isA<String>());
         expect(snapshot.docs.first['brand'], equals('VW'));
         expect(snapshot.docs.first['model'], equals('Nivus'));
       });
