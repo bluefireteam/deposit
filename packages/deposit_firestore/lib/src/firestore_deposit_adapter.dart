@@ -25,11 +25,6 @@ class FirestoreDepositAdapter extends DepositAdapter<String> {
     String primaryColumn,
     Map<String, dynamic> data,
   ) async {
-    assert(
-      data[primaryColumn] == null,
-      'Firestore adapter only works with auto generated ids, '
-      'be sure to pass null on primary column',
-    );
 
     final _data = { ...data };
     _data.remove(primaryColumn);
