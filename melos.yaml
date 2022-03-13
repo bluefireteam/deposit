@@ -60,7 +60,7 @@ scripts:
 
   test:coverage:
     run: |
-      rm ./coverage/*.info
+      rm -rf ./coverage/
       
       if ! melos exec flutter test --coverage --coverage-path ../../coverage/\$MELOS_PACKAGE_NAME.info; then
         exit 1
@@ -69,7 +69,7 @@ scripts:
       tracefiles=""
       for file in ./coverage/*.info; do
         fileName=$(basename -s .info  $file)
-        result=$(sed "s|^SF:|SF:$fileName /|g" $file)
+        result=$(sed "s|^SF:|SF:packages/$fileName/|g" $file)
         echo "$result" > $file
         tracefiles="$tracefiles --add-tracefile $file"
       done
@@ -77,4 +77,10 @@ scripts:
       lcov --list coverage/lcov_combined.info
     select-package:
       dir-exists: test
+    description: Generate LCOV coverage for all the packages as a single LCOV file.
+
+  test:coverage:html:
+    run: |
+      melos run test:coverage --no-select
+      genhtml coverage/lcov_combined.info -o coverage/html
     description: Generate LCOV coverage for all the packages as a single LCOV file.

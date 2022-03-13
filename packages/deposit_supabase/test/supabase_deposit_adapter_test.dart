@@ -269,7 +269,7 @@ void main() {
           <String, dynamic>{
             'id': data[1]['id'],
             'brand': 'Toyota',
-            'model': 'Ayigo',
+            'model': 'Aygo',
           },
         ]);
 

@@ -11,6 +11,16 @@ void main() {
       adapter = MemoryDepositAdapter(memory: memory);
     });
 
+    group('MemoryDepositAdapter()', () {
+      test('can be instantiated', () {
+        expect(MemoryDepositAdapter(), isNotNull);
+      });
+
+      test('can be instantiated with memory', () {
+        expect(MemoryDepositAdapter(memory: {}), isNotNull);
+      });
+    });
+
     group('.add()', () {
       test('adds a single item', () async {
         await adapter.add(
@@ -113,10 +123,67 @@ void main() {
       });
     });
 
-    group('.page()', () {});
+    group('.page()', () {
+      setUp(() async {
+        await Future.wait([
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Nivus',
+          }),
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'VW',
+            'model': 'Virtus',
+          }),
+          adapter.add('cars', 'id', <String, dynamic>{
+            'brand': 'GM',
+            'model': 'Onix',
+          })
+        ]);
+      });
+
+      test('returns a paginated list of items', () async {
+        final result = await adapter.page('cars', limit: 2, skip: 1);
+
+        expect(result.length, equals(2));
+      });
+
+      test('returns a paginated list of items', () async {
+        final result = await adapter.page('cars', limit: 2, skip: 1);
+
+        expect(result.length, equals(2));
+      });
+
+      test('returns a paginated list of items ordered by brand ascending',
+          () async {
+        final result = await adapter.page(
+          'cars',
+          limit: 2,
+          skip: 1,
+          orderBy: OrderBy('brand', ascending: true),
+        );
+
+        expect(result.length, equals(2));
+        expect(result[0]['brand'], equals('VW'));
+        expect(result[1]['brand'], equals('VW'));
+      });
+
+      test('returns a paginated list of items ordered by brand descending',
+          () async {
+        final result = await adapter.page(
+          'cars',
+          limit: 2,
+          skip: 1,
+          orderBy: OrderBy('brand'),
+        );
+
+        expect(result.length, equals(2));
+        expect(result[0]['brand'], equals('VW'));
+        expect(result[1]['brand'], equals('GM'));
+      });
+    });
 
     group('.remove()', () {
-      test('remove an item from the db', () async {
+      test('removes an item from the db', () async {
         final data = await adapter.add('cars', 'id', <String, dynamic>{
           'brand': 'VW',
           'model': 'Nivus',
@@ -147,8 +214,29 @@ void main() {
       });
     });
 
+    group('.update()', () {
+      test('updates an item', () async {
+        final data = await adapter.add('cars', 'id', <String, dynamic>{
+          'id': 1,
+          'brand': 'VW',
+          'model': 'Virtus',
+        });
+
+        await adapter.update('cars', 'id', <String, dynamic>{
+          'id': data['id'],
+          'brand': 'VW',
+          'model': 'Nivus',
+        });
+
+        final result = await adapter.by('cars', 'model', 'Nivus');
+
+        expect(result.length, equals(1));
+        expect(result.first['id'], equals(data['id']));
+      });
+    });
+
     group('.updateAll()', () {
-      test('update multiple items', () async {
+      test('updates multiple items', () async {
         final data = await adapter.addAll(
           'cars',
           'id',
@@ -167,7 +255,7 @@ void main() {
           <String, dynamic>{
             'id': data[1]['id'],
             'brand': 'Toyota',
-            'model': 'Ayigo',
+            'model': 'Aygo',
           },
         ]);
 

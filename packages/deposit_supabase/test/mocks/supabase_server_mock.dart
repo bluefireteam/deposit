@@ -51,12 +51,14 @@ Future<void> _handleRestV1(
   final table = tables[tableName];
   if (table == null) {
     response
-      ..write(jsonEncode({
-        'message': 'relation "public.$tableName" does not exist',
-        'code': '42P01',
-        'details': null,
-        'hint': null
-      }),)
+      ..write(
+        jsonEncode({
+          'message': 'relation "public.$tableName" does not exist',
+          'code': '42P01',
+          'details': null,
+          'hint': null
+        }),
+      )
       ..statusCode = 404;
     return;
   }
