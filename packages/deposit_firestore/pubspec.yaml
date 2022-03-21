@@ -1,6 +1,6 @@
 name: deposit_firestore
 description: Provides a Firestore adapter for the deposit package
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/bluefireteam/deposit/tree/main/packages/deposit_firestore
 issue_tracker: https://github.com/bluefireteam/deposit
 homepage: https://github.com/bluefireteam/deposit
@@ -11,8 +11,7 @@ environment:
 
 dependencies:
   cloud_firestore: ^3.1.5
-  deposit: ^0.0.1
-
+  deposit: ^0.0.2
 dev_dependencies:
   fake_cloud_firestore: ^1.2.1
   flutter_test:
